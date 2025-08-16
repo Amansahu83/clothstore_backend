@@ -1,0 +1,9 @@
+express
+bcryptjs
+jsonwebtoken
+pg
+cors
+multer
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
