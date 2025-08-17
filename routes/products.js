@@ -10,20 +10,20 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Get all products
+// Get all products (exclude soft deleted)
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products ORDER BY created_at DESC');
+    const result = await pool.query('SELECT * FROM products WHERE deleted_at IS NULL ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get single product
+// Get single product (exclude soft deleted)
 router.get('/:id', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    const result = await pool.query('SELECT * FROM products WHERE id = $1 AND deleted_at IS NULL', [req.params.id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -106,12 +106,15 @@ router.put('/:id', authenticateToken, requireAdmin, upload.single('image'), asyn
   }
 });
 
-// Delete product (Admin only)
+// Soft delete product (Admin only)
 router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [req.params.id]);
+    const result = await pool.query(
+      'UPDATE products SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1 AND deleted_at IS NULL RETURNING *', 
+      [req.params.id]
+    );
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: 'Product not found or already deleted' });
     }
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
