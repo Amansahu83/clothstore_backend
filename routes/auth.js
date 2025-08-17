@@ -87,7 +87,7 @@ router.post('/forgot-password', async (req, res) => {
       } else {
         console.error('Python script error:', errorOutput);
         // Fallback: log reset link to console
-        const resetUrl = `http://localhost:3000/reset-password?email=${encodeURIComponent(email)}&token=${resetToken}`;
+        const resetUrl = `https://amanclothstore.vercel.app/reset-password?email=${encodeURIComponent(email)}&token=${resetToken}`;
         console.log(`\n=== PASSWORD RESET LINK (Email failed) ===`);
         console.log(`Email: ${email}`);
         console.log(`Reset Link: ${resetUrl}`);
