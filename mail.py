@@ -46,7 +46,7 @@ def send_reset_email(to_email, reset_token):
         mime_message['Subject'] = 'Password Reset - ClothStore'
         
         # Create HTML email with reset link
-        reset_url = f"http://localhost:3000/reset-password?email={to_email}&token={reset_token}"
+        reset_url = f"https://amanclothstore.vercel.app/reset-password?email={to_email}&token={reset_token}"
         
         html_content = f"""
         <html>
